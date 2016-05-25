@@ -14,5 +14,12 @@ public class ParserTest {
 			e.printStackTrace();
 		}
 		
+		List<Object> orderDetailList = parser.findOrderDetail("./src/com/obj/data/MyOrders.json");
+		try {
+			parser.writeFile("./src/com/des/data/orderdetail.json", parser.listToJson(orderDetailList));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

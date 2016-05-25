@@ -76,5 +76,31 @@ public class Parser {
 		return jsonArray.toString();
 	}
 	
+	public List<Object> findOrderDetail(String path) {
+		List<Object> list = new ArrayList<Object>();
+		String sets = ReadFile(path);
+		JSONObject jo=JSONObject.fromObject(sets);
+		JSONArray array = jo.getJSONArray("data");
+		for (int i=0; i<array.size(); i++){
+			JSONObject orderJsonObj = array.getJSONObject(i);
+			String orderId = orderJsonObj.getString("id");
+			JSONArray orderDetails = JSONArray.fromObject(orderJsonObj.getJSONArray("order_goods"));
+			for (int j=0; j<orderDetails.size(); j++){
+				JSONArray subOrderDetails = orderDetails.getJSONArray(j);
+				for (int k=0; k<subOrderDetails.size(); k++) {
+					OrderDetail orderDetail = new OrderDetail();
+					JSONObject orderDetailObject = subOrderDetails.getJSONObject(k);
+					orderDetail.setGoodsId(orderDetailObject.get("goods_id").toString());
+					orderDetail.setItemId(orderDetailObject.get("id").toString());
+					orderDetail.setPrice(orderDetailObject.get("real_price").toString());
+					orderDetail.setQuantity(orderDetailObject.get("goods_nums").toString());
+					orderDetail.setOrdersId(orderId);
+					list.add(orderDetail);
+				}
+			}
+		}
+		return list;
+	}
+	
 	
 }
