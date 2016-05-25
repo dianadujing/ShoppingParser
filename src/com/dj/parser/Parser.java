@@ -1,3 +1,4 @@
+package com.dj.parser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -42,24 +43,38 @@ public class Parser {
 	    return laststr;
 	}
 	
-	public void writeFile(String filePath, String sets) throws IOException {
+	public void writeFile(String filePath, String json) throws IOException {
 	    FileWriter fw = new FileWriter(filePath);
 	    PrintWriter out = new PrintWriter(fw);
-	    out.write(sets);
+	    out.write(json);
 	    out.println();
 	    fw.close();
 	    out.close();
 	   }
 	
-	public List<Order> findOrders(String path) {
-		String text = ReadFile(path);
-		JSONObject jsonObj = JSONObject.fromObject(text);
-		JSONArray array = jsonObj.getJSONArray("data");
-		List<Order> list = new ArrayList<Order>();
+	public List<Object> findOrders(String path) {
+		String sets = ReadFile(path);
+		JSONObject jo=JSONObject.fromObject(sets);
+		JSONArray array = jo.getJSONArray("data");
+		List<Object> list = new ArrayList<Object>();
 		for (int i=0; i<array.size(); i++){
-			Order obj = (Order)JSONObject.toBean((JSONArray.fromObject(array.toString()).getJSONObject(i)), Order.class);
-			list.add(obj);
+			JSONObject orderJsonObj = array.getJSONObject(i);
+			Order order = new Order();
+			order.setCount(orderJsonObj.getString("status"));
+			order.setOrderId(orderJsonObj.getString("id"));
+			order.setOrderTime(orderJsonObj.getString("completion_time"));
+			order.setPayment(orderJsonObj.getString("pay_type"));
+			order.setTotalPrice("order_amount");
+			order.setUserId(orderJsonObj.getString("user_id"));
+			list.add(order);
 		}
 		return list;
 	}
+	
+	public String listToJson(List<Object> list) {
+		JSONArray jsonArray = JSONArray.fromObject(list);
+		return jsonArray.toString();
+	}
+	
+	
 }
